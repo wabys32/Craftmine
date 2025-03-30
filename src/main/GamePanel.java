@@ -9,7 +9,7 @@ public class GamePanel extends JPanel {
     final int scale = 3; // 16x16 pixels for a character is small as fuck, so we gotta multiply that by 3 to make it's size more reasonable
 
     final int tileSize = originalTileSize * scale;
-    final int maxScreenCol = 16;
+    final int maxScreenCol = 22;
     final int maxScreenRow = 12; // so it makes the ratio of 4 by 3
     final int screenWidth = tileSize * maxScreenCol; // 768px
     final int screenHeight = tileSize * maxScreenRow; // 576 px
