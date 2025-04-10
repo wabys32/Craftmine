@@ -1,31 +1,31 @@
 package main;
 
+import entity.Player;
+
 import java.awt.*;
 
 import javax.swing.JPanel;
 
 public class GamePanel extends JPanel implements Runnable {
-    // Screen settings
+    //================== Screen settings
     final int originalTileSize = 16; // 16x16 tile (size for all characters, blocks etc.)
-    final int scale = 3; // 16x16 pixels for a character is small as fuck, so we gotta multiply that by 3 to make it's size more reasonable
+    final int scale = 2; // 16x16 pixels for a character is small as fuck, so we gotta multiply that by 3 to make it's size more reasonable
 
-    final int tileSize = originalTileSize * scale; // final tile size
-    final int maxScreenCol = 16;
-    final int maxScreenRow = 12; // so it makes the ratio of 4 by 3
+    public final int tileSize = originalTileSize * scale; // final tile size
+    final int maxScreenCol = 28;
+    final int maxScreenRow = 16; // so it makes the ratio of 4 by 3
     // by multiplying max amount of cols/rows to tile size, we get our window resolution
     final int screenWidth = tileSize * maxScreenCol; // 768px
     final int screenHeight = tileSize * maxScreenRow; // 576px
 
     int FPS = 60;
+
     KeyHandler keyHandler = new KeyHandler();
     Thread gameThread;
-
-    // Set Player's default position
-    int playerX = 100;
-    int playerY = 100;
-    int playerSpeed = 4;
+    Player player = new Player(this, keyHandler);
 
 
+    // Function to create game panel
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.black);
@@ -35,12 +35,14 @@ public class GamePanel extends JPanel implements Runnable {
         this.setFocusable(true); // so that GamePanel can be focused to receive key input
     }
 
+    // use threads tu run game
     public void startGameThread(){
         gameThread = new Thread(this);
         gameThread.start();
     }
+
     @Override
-    public void run() { // this creates game thread
+    public void run() { // this creates a game thread // DO NOT TOUCH THIS FUNCTION
         double drawInterval = 1000000000 / FPS;
         double delta = 0;
         long lastTime = System.nanoTime();
@@ -58,12 +60,11 @@ public class GamePanel extends JPanel implements Runnable {
             Then we update, using Update() method.
             */
             currentTime = System.nanoTime();
-
             delta += (currentTime - lastTime) / drawInterval;
             //timer += (currentTime - lastTime); to display fps
             lastTime = currentTime;
 
-            if(delta >= 1){
+            if(delta >= 1){ // DO NOT WRITE ANYTHING ELSE HERE, update functions is below, so write there, not here
                 Update();
                 repaint();
                 delta--;
@@ -78,24 +79,18 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    public void Update(){
-        if(keyHandler.upPressed == true){
-            playerY -= playerSpeed;
-        }else if(keyHandler.downPressed == true){
-            playerY += playerSpeed;
-        }else if(keyHandler.leftPressed == true){
-            playerX -= playerSpeed;
-        }else if(keyHandler.rightPressed == true){
-            playerX += playerSpeed;
-        }
-    }
-
     public void paintComponent(Graphics g){
         super.paintComponent(g); // super means JPanel, because this GamePanel class is a subclass of JPanel
         Graphics2D g2 = (Graphics2D) g; // we change graphics g to graphics 2d graph, which has more functions
-        g2.setColor(Color.white);
-        g2.fillRect(playerX, playerY, tileSize, tileSize);
+
+        player.draw(g2);
+
         g2.dispose();
+    }
+
+    // Everything that's gonna happen every damn frame, write here
+    public void Update(){
+        player.update();
     }
 }
 

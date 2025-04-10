@@ -1,0 +1,26 @@
+package entity;
+
+import java.awt.image.BufferedImage;
+
+public class Entity {
+    public int x, y;
+    public int speed;
+
+    // Let's leave this shit as it is
+    public int rightAnimationFrames = 2;
+    public BufferedImage[] rightAnimations = new BufferedImage[rightAnimationFrames];
+    public int leftAnimationFrames = 2;
+    public BufferedImage[] leftAnimations = new BufferedImage[leftAnimationFrames];
+    public int upAnimationFrames = 2;
+    public BufferedImage[] upAnimations = new BufferedImage[upAnimationFrames];
+    public int downAnimationFrames = 2;
+    public BufferedImage[] downAnimations = new BufferedImage[downAnimationFrames];
+    public BufferedImage idle;
+
+    // Current direction of a player
+    public String direction;
+
+    // These two variables are for sprite changing during the game, to make animation
+    public int spriteCounter = 0;
+    public int[] spriteNumbers = {1,1,1,1}; // right left top down
+}
