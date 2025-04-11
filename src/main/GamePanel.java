@@ -1,10 +1,18 @@
 package main;
 
+import entity.Enemy;
+import entity.Entity;
 import entity.Player;
+import tile.Tile;
 
-import java.awt.*;
-
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+import java.awt.*;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class GamePanel extends JPanel implements Runnable {
     //================== Screen settings
@@ -24,15 +32,53 @@ public class GamePanel extends JPanel implements Runnable {
     Thread gameThread;
     Player player = new Player(this, keyHandler);
 
+    public Tile[] tileTypes; // Массив типов тайлов
+    public int[][] worldMap; // Карта мира (индексы типов тайлов)
+    public final int worldCols = 50; // Ширина мира
+    public final int worldRows = 50; // Высота мира
 
-    // Function to create game panel
+    public Camera camera;
+    public List<Entity> entities = new CopyOnWriteArrayList<>(); // Потокобезопасный список
+    private ExecutorService aiExecutor = Executors.newFixedThreadPool(2); // Пул для ИИ
+
+
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.black);
-        this.setDoubleBuffered(true); // better for rendering performance
-        // Key input handler
+        this.setDoubleBuffered(true);
         this.addKeyListener(keyHandler);
-        this.setFocusable(true); // so that GamePanel can be focused to receive key input
+        this.setFocusable(true);
+        setupTiles();
+        setupWorldMap();
+
+        entities.add(player); // Игрок первая сущность
+        entities.add(new Enemy(this));
+        camera = new Camera(screenWidth, screenHeight, worldCols * tileSize, worldRows * tileSize);
+    }
+
+    private void setupTiles() {
+        tileTypes = new Tile[2]; // Например, 2 типа: трава и стена
+        try {
+            tileTypes[0] = new Tile(ImageIO.read(getClass().getResourceAsStream("/tiles/grass.png")), false);
+            tileTypes[1] = new Tile(ImageIO.read(getClass().getResourceAsStream("/tiles/wall.png")), true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setupWorldMap() {
+        worldMap = new int[worldCols][worldRows];
+
+        // Пока что: заполняем травой, добавляем стены по краям
+        for (int col = 0; col < worldCols; col++) {
+            for (int row = 0; row < worldRows; row++) {
+                if (col == 0 || col == worldCols - 1 || row == 0 || row == worldRows - 1) {
+                    worldMap[col][row] = 1; // Стена
+                } else {
+                    worldMap[col][row] = 0; // Трава
+                }
+            }
+        }
     }
 
     // use threads tu run game
@@ -43,7 +89,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() { // this creates a game thread // DO NOT TOUCH THIS FUNCTION
-        double drawInterval = 1000000000 / FPS;
+        double drawInterval = 1000000000.0 / FPS;
         double delta = 0;
         long lastTime = System.nanoTime();
         long currentTime;
@@ -65,7 +111,7 @@ public class GamePanel extends JPanel implements Runnable {
             lastTime = currentTime;
 
             if(delta >= 1){ // DO NOT WRITE ANYTHING ELSE HERE, update functions is below, so write there, not here
-                Update();
+                update();
                 repaint();
                 delta--;
                 //frames++; to display fps
@@ -77,21 +123,64 @@ public class GamePanel extends JPanel implements Runnable {
                 timer = 0;
             }*/
         }
+        stopGameThread(); // Гарантируем завершение при остановке
     }
 
-    public void paintComponent(Graphics g){
-        super.paintComponent(g); // super means JPanel, because this GamePanel class is a subclass of JPanel
-        Graphics2D g2 = (Graphics2D) g; // we change graphics g to graphics 2d graph, which has more functions
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g;
 
-        player.draw(g2);
+        int startCol = camera.getX() / tileSize;
+        int endCol = Math.min(startCol + maxScreenCol + 1, worldCols);
+        int startRow = camera.getY() / tileSize;
+        int endRow = Math.min(startRow + maxScreenRow + 1, worldRows);
+
+        for (int col = 0; col < worldCols; col++) {
+            for (int row = 0; row < worldRows; row++) {
+                int x = col * tileSize - camera.getX();
+                int y = row * tileSize - camera.getY();
+                g2.drawImage(tileTypes[worldMap[col][row]].image, x, y, tileSize, tileSize, null);
+            }
+        }
+
+        for (Entity e : entities) {
+            int screenX = e.x - camera.getX();
+            int screenY = e.y - camera.getY();
+            if (screenX > -tileSize && screenX < screenWidth && screenY > -tileSize && screenY < screenHeight) {
+                e.draw(g2, screenX, screenY);
+            }
+        }
 
         g2.dispose();
     }
 
     // Everything that's gonna happen every damn frame, write here
-    public void Update(){
+    public void update() {
+        // Обновляем игрока в основном потоке
         player.update();
+        // Обновляем ИИ врагов в пуле потоков
+        for (Entity e : entities) {
+            if (e != player) { // Пропускаем игрока
+                aiExecutor.submit(e::update);
+            }
+        }
+        // Обновляем камеру
+        camera.update(player);
     }
+
+
+    public void stopGameThread() {
+        gameThread = null;
+        try {
+            aiExecutor.shutdown();
+            aiExecutor.awaitTermination(1, java.util.concurrent.TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 }
 
 

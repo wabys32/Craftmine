@@ -1,8 +1,8 @@
 package entity;
-
 import java.awt.image.BufferedImage;
+import java.awt.Graphics2D;
 
-public class Entity {
+public abstract class Entity {
     public int x, y;
     public int speed;
 
@@ -23,4 +23,18 @@ public class Entity {
     // These two variables are for sprite changing during the game, to make animation
     public int spriteCounter = 0;
     public int[] spriteNumbers = {1,1,1,1}; // right left top down
+
+    public abstract void update();
+
+    public void draw(Graphics2D g2) {
+        // Пустой метод для переопределения
+    }
+
+    public void draw(Graphics2D g2, int screenX, int screenY) {
+        // Базовая реализация для наследников
+        this.x = screenX;
+        this.y = screenY;
+    }
+
+
 }

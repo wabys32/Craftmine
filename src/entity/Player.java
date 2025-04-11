@@ -53,11 +53,10 @@ public class Player extends Entity{
     }
 
     // update method for player only
-    public void update(){
+    public void update() {
         int dx = 0;
         int dy = 0;
 
-        // change direction according to the key presses
         if (keyHandler.upPressed) {
             direction = "up";
             dy -= 1;
@@ -74,20 +73,28 @@ public class Player extends Entity{
             direction = "right";
             dx += 1;
         }
-        if(dx == 0 && dy == 0){
+        if (dx == 0 && dy == 0) {
             direction = "idle";
+            return;
         }
 
-        // Normalization
+        // Нормализация
         double length = Math.sqrt(dx * dx + dy * dy);
-        if (length != 0) {
-            x += (int) ((dx / length) * speed);
-            y += (int) ((dy / length) * speed);
-        }
+        int nextX = x + (int) ((dx / length) * speed);
+        int nextY = y + (int) ((dy / length) * speed);
 
-        // change sprite over time (every 10 iterations (which is 1/6 second (10/60)))
+        // Проверка коллизий
+        int tileX = nextX / gamePanel.tileSize;
+        int tileY = nextY / gamePanel.tileSize;
+        if (tileX >= 0 && tileX < gamePanel.worldCols && tileY >= 0 && tileY < gamePanel.worldRows) {
+            if (!gamePanel.tileTypes[gamePanel.worldMap[tileX][tileY]].isSolid) {
+                x = nextX;
+                y = nextY;
+            }
+        }
+        // Обновление анимации
         spriteCounter++;
-        if(spriteCounter > 12){
+        if (spriteCounter > 12) {
             spriteNumbers[0] = (spriteNumbers[0] + 1) % rightAnimationFrames;
             spriteNumbers[1] = (spriteNumbers[1] + 1) % leftAnimationFrames;
             spriteNumbers[2] = (spriteNumbers[2] + 1) % upAnimationFrames;
@@ -97,14 +104,9 @@ public class Player extends Entity{
     }
 
     // Render function
-    public void draw(Graphics2D g2){
-        //g2.setColor(Color.white);
-        //g2.fillRect(x, y, gamePanel.tileSize, gamePanel.tileSize);
-
+    public void draw(Graphics2D g2, int screenX, int screenY) {
         BufferedImage image = null;
-
-        // render sprite, according to player's direction
-        switch(direction){
+        switch (direction) {
             case "left":
                 image = leftAnimations[spriteNumbers[1]];
                 break;
@@ -121,6 +123,13 @@ public class Player extends Entity{
                 image = idle;
                 break;
         }
-        g2.drawImage(image, x, y, gamePanel.tileSize, gamePanel.tileSize, null); // drawing that nigga
+        g2.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
     }
+
+    public void draw(Graphics2D g2) {
+        draw(g2, x, y); // Для обратной совместимости
+    }
+
+
+
 }
