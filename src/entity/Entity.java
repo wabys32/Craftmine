@@ -3,7 +3,7 @@ package entity;
 import java.awt.image.BufferedImage;
 
 public class Entity {
-    public int x, y;
+    public int worldX, worldY;
     public int speed;
 
     // Let's leave this shit as it is
@@ -17,7 +17,7 @@ public class Entity {
     public BufferedImage[] downAnimations = new BufferedImage[downAnimationFrames];
     public BufferedImage idle;
 
-    // Current direction of a player
+    // Current direction of an entity
     public String direction;
 
     // These two variables are for sprite changing during the game, to make animation

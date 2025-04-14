@@ -9,22 +9,32 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class Player extends Entity{
-    // inherit properties from the following classes, to use their variables
+    // create variables of the following classes, to use their properties
     GamePanel gamePanel;
     KeyHandler keyHandler;
+
+    // I have absolutely no damn idea what that is
+    public final int screenX;
+    public final int screenY;
+
+    // Player spawn point
+    public final int[] spawnPoint = {2,2};
 
     // Player constructor
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
         this.gamePanel = gamePanel;
         this.keyHandler = keyHandler;
 
+        screenX = gamePanel.screenWidth/2 - (gamePanel.tileSize/2);
+        screenY = gamePanel.screenHeight/2 - (gamePanel.tileSize/2);
+
         setDefaultValues();
         getPlayerImage();
     }
 
-    public void setDefaultValues(){
-        x = 100;
-        y = 100;
+    public void setDefaultValues(){ // Here's a spawn point of the player
+        worldX = gamePanel.tileSize * spawnPoint[0];
+        worldY = gamePanel.tileSize * spawnPoint[1];
         speed = 3;
         direction = "idle";
     }
@@ -81,12 +91,13 @@ public class Player extends Entity{
         // Normalization
         double length = Math.sqrt(dx * dx + dy * dy);
         if (length != 0) {
-            x += (int) ((dx / length) * speed);
-            y += (int) ((dy / length) * speed);
+            worldX += (int) ((dx / length) * speed);
+            worldY += (int) ((dy / length) * speed);
         }
 
         // change sprite over time (every 10 iterations (which is 1/6 second (10/60)))
         spriteCounter++;
+        // 12 here is how fast the sprite changes. The higher the value, the slower it changes, and vice versa
         if(spriteCounter > 12){
             spriteNumbers[0] = (spriteNumbers[0] + 1) % rightAnimationFrames;
             spriteNumbers[1] = (spriteNumbers[1] + 1) % leftAnimationFrames;
@@ -121,6 +132,6 @@ public class Player extends Entity{
                 image = idle;
                 break;
         }
-        g2.drawImage(image, x, y, gamePanel.tileSize, gamePanel.tileSize, null); // drawing that nigga
+        g2.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null); // drawing that nigga
     }
 }

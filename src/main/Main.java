@@ -1,6 +1,7 @@
 package main;
 import javax.swing.JFrame;
 
+// Just loading all that shit here
 public class Main {
     public static void main(String[] args) {
         JFrame window = new JFrame();
