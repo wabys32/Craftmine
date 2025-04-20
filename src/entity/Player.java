@@ -20,8 +20,6 @@ public class Player extends Entity{
     // Player spawn point
     public final int[] spawnPoint = {10,10};
 
-    int proteinsDrank = 0;
-
 
     // Player constructor
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
@@ -34,8 +32,6 @@ public class Player extends Entity{
         //solidArea = new Rectangle(0, 0, gamePanel.tileSize, gamePanel.tileSize); - would make collider's size the same as tile size
         //creating player's collider
         solidArea = new Rectangle(12, 12, 8, 14);
-        solidAreaDefaultX = solidArea.x;
-        solidAreaDefaultY = solidArea.y;
 
         setDefaultValues();
         getPlayerImage();
@@ -92,10 +88,6 @@ public class Player extends Entity{
         collisionOn = false;
         gamePanel.cChecker.checkTile(this); //pass this(entity) class to the collision checker class
 
-        // Check object collision
-        int objIndex = gamePanel.cChecker.checkObject(this, true);
-        pickUpObject(objIndex);
-
         if(collisionOn == false){
             if(keyHandler.upPressed){ // player moving up
                 if(worldY/gamePanel.tileSize >= 1) // extra check for world borders
@@ -119,8 +111,6 @@ public class Player extends Entity{
             }
         }
 
-
-
         // Animate
         // change sprite over time (every 10 iterations (which is 1/6 second (10/60)))
         spriteCounter++;
@@ -131,24 +121,6 @@ public class Player extends Entity{
             spriteNumbers[2] = (spriteNumbers[2] + 1) % upAnimationFrames;
             spriteNumbers[3] = (spriteNumbers[3] + 1) % downAnimationFrames;
             spriteCounter = 0;
-        }
-    }
-
-    // Object collision Function
-    public void pickUpObject(int i){
-        if(i != 999){
-            String objectName = gamePanel.obj[i].name;
-            switch(objectName){
-                case "Dumbbell":
-                    break;
-                case "Kettlebell":
-                    break;
-                case "Protein":
-                    proteinsDrank++;
-                    gamePanel.obj[i] = null; // delete object, after picking it up
-                    System.out.println("Drank protein, current power: " + proteinsDrank);
-                    break;
-            }
         }
     }
 

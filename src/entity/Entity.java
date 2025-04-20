@@ -26,7 +26,6 @@ public class Entity {
     public int[] spriteNumbers = {1,1,1,1}; // right left top down
 
     public Rectangle solidArea;
-    public int solidAreaDefaultX, solidAreaDefaultY;
     public boolean collisionOn = false;
 
     // Another direction variable, don't ask why

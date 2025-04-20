@@ -5,7 +5,7 @@ import java.io.IOException;
 
 public class OBJ_Protein extends SuperObject{
     public OBJ_Protein(){
-        name = "Protein";
+        name = "Dumbbell";
         try{
             image = ImageIO.read(getClass().getResourceAsStream("/objects/protein.png"));
         }catch(IOException e){
