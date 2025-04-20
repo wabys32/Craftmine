@@ -1,6 +1,7 @@
 package main;
 
 import entity.Player;
+import object.SuperObject;
 import tile.TileManager;
 
 import java.awt.*;
@@ -25,7 +26,6 @@ public class GamePanel extends JPanel implements Runnable {
     public final int worldWidth = tileSize * maxWorldCol;
     public final int worldHeight = tileSize * maxWorldRow;
 
-
     int FPS = 60;
 
     KeyHandler keyHandler = new KeyHandler();
@@ -33,6 +33,8 @@ public class GamePanel extends JPanel implements Runnable {
     public Player player = new Player(this, keyHandler);
     TileManager tileManager = new TileManager(this);
     public CollisionChecker cChecker = new CollisionChecker(this);
+    public SuperObject obj[] = new SuperObject[10]; // prep 10 slots for object (can create up to 10 object at a time)
+    public AssetSetter aSetter = new AssetSetter(this); // class for object placement
 
 
     // Function to create game panel
@@ -43,6 +45,10 @@ public class GamePanel extends JPanel implements Runnable {
         // Key input handler
         this.addKeyListener(keyHandler);
         this.setFocusable(true); // so that GamePanel can be focused to receive key input
+    }
+
+    public void setUpGame(){
+        aSetter.setObject();
     }
 
     // use threads to run the game
@@ -96,6 +102,14 @@ public class GamePanel extends JPanel implements Runnable {
 
         // we first draw the map
         tileManager.draw(g2);
+
+        // then we draw objects
+        for(int i = 0; i < obj.length; i++){
+            if(obj[i] != null){
+                obj[i].draw(g2, this);
+            }
+        }
+
         // then we draw the player
         player.draw(g2);
 
