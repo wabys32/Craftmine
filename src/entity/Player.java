@@ -18,7 +18,8 @@ public class Player extends Entity{
     public final int screenY;
 
     // Player spawn point
-    public final int[] spawnPoint = {2,2};
+    public final int[] spawnPoint = {10,10};
+
 
     // Player constructor
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
@@ -27,6 +28,10 @@ public class Player extends Entity{
 
         screenX = gamePanel.screenWidth/2 - (gamePanel.tileSize/2);
         screenY = gamePanel.screenHeight/2 - (gamePanel.tileSize/2);
+
+        //solidArea = new Rectangle(0, 0, gamePanel.tileSize, gamePanel.tileSize); - would make collider's size the same as tile size
+        //creating player's collider
+        solidArea = new Rectangle(12, 12, 8, 14);
 
         setDefaultValues();
         getPlayerImage();
@@ -62,32 +67,51 @@ public class Player extends Entity{
         }
     }
 
+
+
     // update method for player only
     public void update(){
-        int dx = 0;
-        int dy = 0;
-
         // change direction according to the key presses
-        if (keyHandler.upPressed) {
-            direction = "up";
-            worldY -= speed;
-        }
-        else if (keyHandler.downPressed) {
-            direction = "down";
-            worldY += speed;
-        }
-        else if (keyHandler.leftPressed) {
-            direction = "left";
-            worldX -= speed;
-        }
-        else if (keyHandler.rightPressed) {
-            direction = "right";
-            worldX += speed;
-        }else {
-            direction = "idle";
+        current_moving_directions[0] = keyHandler.upPressed ? 1 : 0;
+        current_moving_directions[1] = keyHandler.downPressed ? 1 : 0;
+        current_moving_directions[2] = keyHandler.leftPressed ? 1 : 0;
+        current_moving_directions[3] = keyHandler.rightPressed ? 1 : 0;
+
+        /*
+        * 0 - top
+        * 1 - down
+        * 2 - left
+        * 3 - right
+        * */
+
+        // Check collision
+        collisionOn = false;
+        gamePanel.cChecker.checkTile(this); //pass this(entity) class to the collision checker class
+
+        if(collisionOn == false){
+            if(keyHandler.upPressed){ // player moving up
+                if(worldY/gamePanel.tileSize >= 1) // extra check for world borders
+                    worldY -= speed;
+                direction = "up";
+            }
+            if(keyHandler.downPressed){ // player moving down
+                if(worldY/gamePanel.tileSize < gamePanel.maxWorldRow-2) // extra check for world borders
+                    worldY += speed;
+                direction = "down";
+            }
+            if(keyHandler.leftPressed){ // player moving left
+                if(worldX/gamePanel.tileSize >= 1) // extra check for world borders
+                    worldX -= speed;
+                direction = "left";
+            }
+            if(keyHandler.rightPressed){ // player moving right
+                if(worldX/gamePanel.tileSize < gamePanel.maxWorldCol-2) // extra check for world borders
+                    worldX += speed;
+                direction = "right";
+            }
         }
 
-
+        // Animate
         // change sprite over time (every 10 iterations (which is 1/6 second (10/60)))
         spriteCounter++;
         // 12 here is how fast the sprite changes. The higher the value, the slower it changes, and vice versa
