@@ -70,30 +70,23 @@ public class Player extends Entity{
         // change direction according to the key presses
         if (keyHandler.upPressed) {
             direction = "up";
-            dy -= 1;
+            worldY -= speed;
         }
-        if (keyHandler.downPressed) {
+        else if (keyHandler.downPressed) {
             direction = "down";
-            dy += 1;
+            worldY += speed;
         }
-        if (keyHandler.leftPressed) {
+        else if (keyHandler.leftPressed) {
             direction = "left";
-            dx -= 1;
+            worldX -= speed;
         }
-        if (keyHandler.rightPressed) {
+        else if (keyHandler.rightPressed) {
             direction = "right";
-            dx += 1;
-        }
-        if(dx == 0 && dy == 0){
+            worldX += speed;
+        }else {
             direction = "idle";
         }
 
-        // Normalization
-        double length = Math.sqrt(dx * dx + dy * dy);
-        if (length != 0) {
-            worldX += (int) ((dx / length) * speed);
-            worldY += (int) ((dy / length) * speed);
-        }
 
         // change sprite over time (every 10 iterations (which is 1/6 second (10/60)))
         spriteCounter++;
