@@ -56,6 +56,7 @@ public class CollisionChecker {
         }
     }
 
+    // Function for object collision check
     public int checkObject(Entity entity, boolean player){
         int index = 999;
 
