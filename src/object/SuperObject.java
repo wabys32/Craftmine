@@ -5,6 +5,11 @@ import main.GamePanel;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+/*
+* OBJECT COLLISION DETECTION IS IN THE CollisionChecker.java script
+* OBJECT BEHAVIOR IS IN THE Player.java script
+* */
+
 public class SuperObject {
     public BufferedImage image;
     public String name;

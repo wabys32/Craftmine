@@ -9,6 +9,7 @@ public class CollisionChecker {
         this.gamePanel = gamePanel;
     }
 
+    // TILE COLLISION
     public void checkTile(Entity entity){
         int entityLeftWorldX = entity.worldX + entity.solidArea.x;
         int entityRightWorldX = entity.worldX + entity.solidArea.x + entity.solidArea.width;
@@ -56,7 +57,7 @@ public class CollisionChecker {
         }
     }
 
-    // Function for object collision check
+    // OBJECT COLLISION
     public int checkObject(Entity entity, boolean player){
         int index = 999;
 

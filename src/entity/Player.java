@@ -134,7 +134,7 @@ public class Player extends Entity{
         }
     }
 
-    // Object collision Function
+    // OBJECT COLLISION HANDLER
     public void pickUpObject(int i){
         if(i != 999){
             String objectName = gamePanel.obj[i].name;
@@ -144,6 +144,7 @@ public class Player extends Entity{
                 case "Kettlebell":
                     break;
                 case "Protein":
+                    gamePanel.playSoundEffect(0); // play pick up sound
                     proteinsDrank++;
                     gamePanel.obj[i] = null; // delete object, after picking it up
                     System.out.println("Drank protein, current power: " + proteinsDrank);
