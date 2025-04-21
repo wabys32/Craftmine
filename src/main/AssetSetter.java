@@ -16,11 +16,11 @@ public class AssetSetter {
     private int currentObject = 0;
 
     public void setObject(){
-        placeObject(9, 5, new OBJ_Kettlebell());
-        placeObject(11, 11, new OBJ_Kettlebell());
-        placeObject(14, 11, new OBJ_Protein());
-        placeObject(18, 11, new OBJ_Protein());
-        placeObject(18, 15, new OBJ_Protein());
+        placeObject(9, 5, new OBJ_Kettlebell(gamePanel));
+        placeObject(11, 11, new OBJ_Kettlebell(gamePanel));
+        placeObject(14, 11, new OBJ_Protein(gamePanel));
+        placeObject(18, 11, new OBJ_Protein(gamePanel));
+        placeObject(18, 15, new OBJ_Protein(gamePanel));
     }
 
 

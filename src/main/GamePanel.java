@@ -103,6 +103,11 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g); // super means JPanel, because this GamePanel class is a subclass of JPanel
         Graphics2D g2 = (Graphics2D) g; // we change graphics g to graphics 2d graph, which has more functions
 
+        // Debug
+        //long drawStart = 0;
+        //drawStart = System.nanoTime();
+
+
         // we first draw the map
         tileManager.draw(g2);
 
@@ -118,6 +123,11 @@ public class GamePanel extends JPanel implements Runnable {
 
         // UI's gotta be drawn above all layers
         ui.draw(g2);
+
+        //Debug
+        //long drawEnd = System.nanoTime();
+        //long passed = drawEnd - drawStart;
+        //System.out.println(passed);
 
         g2.dispose();
     }

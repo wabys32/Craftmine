@@ -2,6 +2,7 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
+import main.UtilityTool;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -50,29 +51,36 @@ public class Player extends Entity{
 
     // load all animations sprites
     public void getPlayerImage(){
-        try{
-            for(int i = 0; i < rightAnimationFrames; ++i){
-                rightAnimations[i] = ImageIO.read(getClass().getResourceAsStream("/player/runRight"+(i+1)+".png"));
-            }
-            for(int i = 0; i < leftAnimationFrames; ++i){
-                leftAnimations[i] = ImageIO.read(getClass().getResourceAsStream("/player/runLeft"+(i+1)+".png"));
-            }
-            for(int i = 0; i < downAnimationFrames; ++i){
-                downAnimations[i] = ImageIO.read(getClass().getResourceAsStream("/player/runDown"+(i+1)+".png"));
-            }
-            for(int i = 0; i < upAnimationFrames; ++i){
-                upAnimations[i] = ImageIO.read(getClass().getResourceAsStream("/player/runUp"+(i+1)+".png"));
-            }
-
-            idle = ImageIO.read(getClass().getResourceAsStream("/player/idle.png"));
-            idleUp = ImageIO.read(getClass().getResourceAsStream("/player/idleUp.png"));
-
-        }catch(IOException e){
-            e.printStackTrace();
+        for(int i = 0; i < rightAnimationFrames; ++i){
+            rightAnimations[i] = setup("runRight"+(i+1));
         }
+        for(int i = 0; i < leftAnimationFrames; ++i){
+            leftAnimations[i] = setup("runLeft"+(i+1));
+        }
+        for(int i = 0; i < downAnimationFrames; ++i){
+            downAnimations[i] = setup("runDown"+(i+1));
+        }
+        for(int i = 0; i < upAnimationFrames; ++i){
+            upAnimations[i] = setup("runUp"+(i+1));
+        }
+
+        idle = setup("idle");
+        idleUp = setup("idleUp");
     }
 
+    public BufferedImage setup(String imageName){
+        UtilityTool uTool = new UtilityTool();
+        BufferedImage image = null;
 
+        try{
+            image = ImageIO.read(getClass().getResourceAsStream("/player/"+imageName+".png"));
+            image = uTool.scaledImage(image, gamePanel.tileSize, gamePanel.tileSize);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+        return image;
+    }
 
     // update method for player only
     public void update(){
@@ -129,8 +137,6 @@ public class Player extends Entity{
                     direction = "idleRight";
             }
         }
-        System.out.println(direction);
-
 
         // Animate
         // change sprite over time (every 10 iterations (which is 1/6 second (10/60)))
@@ -202,6 +208,6 @@ public class Player extends Entity{
                 image = idle;
                 break;
         }
-        g2.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null); // drawing that nigga
+        g2.drawImage(image, screenX, screenY, null); // drawing that nigga
     }
 }

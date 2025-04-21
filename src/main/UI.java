@@ -18,7 +18,7 @@ public class UI {
         this.gamePanel = gamePanel;
 
         arial_50 = new Font("Arial", Font.BOLD, 50);
-        OBJ_Protein protein = new OBJ_Protein();
+        OBJ_Protein protein = new OBJ_Protein(gamePanel);
         proteinImage = protein.image;
     }
 
