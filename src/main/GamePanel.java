@@ -29,9 +29,11 @@ public class GamePanel extends JPanel implements Runnable {
     TileManager tileManager = new TileManager(this);
     KeyHandler keyHandler = new KeyHandler();
     Sound sound = new Sound();
+    //Sound music = new Sound();
     public CollisionChecker cChecker = new CollisionChecker(this);
     public Player player = new Player(this, keyHandler);
     Thread gameThread;
+    public UI ui = new UI(this);
 
     // Objects
     public SuperObject obj[] = new SuperObject[10]; // prep 10 slots for object (can create up to 10 object at a time)
@@ -113,6 +115,9 @@ public class GamePanel extends JPanel implements Runnable {
 
         // then we draw the player
         player.draw(g2);
+
+        // UI's gotta be drawn above all layers
+        ui.draw(g2);
 
         g2.dispose();
     }

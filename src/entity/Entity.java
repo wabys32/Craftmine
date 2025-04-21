@@ -17,6 +17,7 @@ public class Entity {
     public int downAnimationFrames = 2;
     public BufferedImage[] downAnimations = new BufferedImage[downAnimationFrames];
     public BufferedImage idle;
+    public BufferedImage idleUp;
 
     // Current direction of an entity
     public String direction;

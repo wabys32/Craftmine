@@ -20,7 +20,7 @@ public class Player extends Entity{
     // Player spawn point
     public final int[] spawnPoint = {10,10};
 
-    int proteinsDrank = 0;
+    public int proteinsDrank = 0;
 
 
     // Player constructor
@@ -65,6 +65,7 @@ public class Player extends Entity{
             }
 
             idle = ImageIO.read(getClass().getResourceAsStream("/player/idle.png"));
+            idleUp = ImageIO.read(getClass().getResourceAsStream("/player/idleUp.png"));
 
         }catch(IOException e){
             e.printStackTrace();
@@ -117,8 +118,18 @@ public class Player extends Entity{
                     worldX += speed;
                 direction = "right";
             }
+            if(!keyHandler.upPressed && !keyHandler.downPressed && !keyHandler.leftPressed && !keyHandler.rightPressed){
+                if(direction == "up")
+                    direction = "idleUp";
+                if(direction == "down")
+                    direction = "idleDown";
+                if(direction == "left")
+                    direction = "idleLeft";
+                if(direction == "right")
+                    direction = "idleRight";
+            }
         }
-
+        System.out.println(direction);
 
 
         // Animate
@@ -147,6 +158,7 @@ public class Player extends Entity{
                     gamePanel.playSoundEffect(0); // play pick up sound
                     proteinsDrank++;
                     gamePanel.obj[i] = null; // delete object, after picking it up
+                    gamePanel.ui.showMessage("+Power");
                     System.out.println("Drank protein, current power: " + proteinsDrank);
                     break;
             }
@@ -174,7 +186,19 @@ public class Player extends Entity{
             case "down":
                 image = downAnimations[spriteNumbers[3]];
                 break;
-            case "idle":
+            case "idleUp":
+                image = idleUp;
+                break;
+            case "idleDown":
+                image = idle;
+                break;
+            case "idleLeft":
+                image = leftAnimations[1];
+                break;
+            case "idleRight":
+                image = rightAnimations[1];
+                break;
+            default:
                 image = idle;
                 break;
         }
