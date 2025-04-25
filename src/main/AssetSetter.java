@@ -1,5 +1,6 @@
 package main;
 
+import entity.NPC_Van;
 import object.OBJ_Dumbbell;
 import object.OBJ_Kettlebell;
 import object.OBJ_Protein;
@@ -16,16 +17,12 @@ public class AssetSetter {
     private int currentObject = 0;
 
     public void setObject(){
-        placeObject(9, 5, new OBJ_Kettlebell(gamePanel));
+        placeObject(9, 5, new OBJ_Dumbbell(gamePanel));
         placeObject(11, 11, new OBJ_Kettlebell(gamePanel));
         placeObject(14, 11, new OBJ_Protein(gamePanel));
         placeObject(18, 11, new OBJ_Protein(gamePanel));
         placeObject(18, 15, new OBJ_Protein(gamePanel));
     }
-
-
-
-
 
 
     private void placeObject(int x, int y, SuperObject object){
@@ -38,4 +35,12 @@ public class AssetSetter {
             System.out.println("Cannot create any more objects");
         }
     }
+
+    public void setNPC(){
+        gamePanel.npc[0] = new NPC_Van(gamePanel);
+        // start location
+        gamePanel.npc[0].worldX = gamePanel.tileSize * 10;
+        gamePanel.npc[0].worldY = gamePanel.tileSize * 15;
+    }
+
 }

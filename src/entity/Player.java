@@ -11,7 +11,6 @@ import java.io.IOException;
 
 public class Player extends Entity{
     // create variables of the following classes, to use their properties
-    GamePanel gamePanel;
     KeyHandler keyHandler;
 
     // I have absolutely no damn idea what that is
@@ -23,10 +22,14 @@ public class Player extends Entity{
 
     public int proteinsDrank = 0;
 
+    private int currentBarbellFrame;
+    private int barbellAnimationFrames = 3;
+    private BufferedImage[] barbellAnimations = new BufferedImage[barbellAnimationFrames];
+
 
     // Player constructor
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
-        this.gamePanel = gamePanel;
+        super(gamePanel);
         this.keyHandler = keyHandler;
 
         screenX = gamePanel.screenWidth/2 - (gamePanel.tileSize/2);
@@ -51,35 +54,27 @@ public class Player extends Entity{
 
     // load all animations sprites
     public void getPlayerImage(){
+        // Basic Animations
         for(int i = 0; i < rightAnimationFrames; ++i){
-            rightAnimations[i] = setup("runRight"+(i+1));
+            rightAnimations[i] = setup("/player/runRight"+(i+1));
         }
         for(int i = 0; i < leftAnimationFrames; ++i){
-            leftAnimations[i] = setup("runLeft"+(i+1));
+            leftAnimations[i] = setup("/player/runLeft"+(i+1));
         }
         for(int i = 0; i < downAnimationFrames; ++i){
-            downAnimations[i] = setup("runDown"+(i+1));
+            downAnimations[i] = setup("/player/runDown"+(i+1));
         }
         for(int i = 0; i < upAnimationFrames; ++i){
-            upAnimations[i] = setup("runUp"+(i+1));
+            upAnimations[i] = setup("/player/runUp"+(i+1));
         }
 
-        idle = setup("idle");
-        idleUp = setup("idleUp");
-    }
+        idle = setup("/player/idle");
+        idleUp = setup("/player/idleUp");
 
-    public BufferedImage setup(String imageName){
-        UtilityTool uTool = new UtilityTool();
-        BufferedImage image = null;
-
-        try{
-            image = ImageIO.read(getClass().getResourceAsStream("/player/"+imageName+".png"));
-            image = uTool.scaledImage(image, gamePanel.tileSize, gamePanel.tileSize);
-        }catch (IOException e){
-            e.printStackTrace();
+        // Special Animations
+        for(int i = 0; i < barbellAnimationFrames; ++i){
+            barbellAnimations[i] = setup("/player/barbell"+(i+1));
         }
-
-        return image;
     }
 
     // update method for player only
@@ -97,7 +92,7 @@ public class Player extends Entity{
         * 3 - right
         * */
 
-        // Check collision
+        // Check tiles collision
         collisionOn = false;
         gamePanel.cChecker.checkTile(this); //pass this(entity) class to the collision checker class
 
@@ -105,7 +100,11 @@ public class Player extends Entity{
         int objIndex = gamePanel.cChecker.checkObject(this, true);
         pickUpObject(objIndex);
 
-        if(collisionOn == false){
+        // Check NPC collision
+        int npcIndex = gamePanel.cChecker.checkEntity(this, gamePanel.npc);
+        interactWithNPC(npcIndex);
+
+        if(!collisionOn){
             if(keyHandler.upPressed){ // player moving up
                 if(worldY/gamePanel.tileSize >= 1) // extra check for world borders
                     worldY -= speed;
@@ -147,6 +146,7 @@ public class Player extends Entity{
             spriteNumbers[1] = (spriteNumbers[1] + 1) % leftAnimationFrames;
             spriteNumbers[2] = (spriteNumbers[2] + 1) % upAnimationFrames;
             spriteNumbers[3] = (spriteNumbers[3] + 1) % downAnimationFrames;
+            currentBarbellFrame = (currentBarbellFrame + 1) % barbellAnimationFrames;
             spriteCounter = 0;
         }
     }
@@ -170,6 +170,14 @@ public class Player extends Entity{
             }
         }
     }
+
+    // Interact with NPC
+    public void interactWithNPC(int i){
+        if(i != 999){
+            // Interacting with NPC
+        }
+    }
+
 
     // Render function
     public void draw(Graphics2D g2){
@@ -203,6 +211,9 @@ public class Player extends Entity{
                 break;
             case "idleRight":
                 image = rightAnimations[1];
+                break;
+            case "barbell":
+                image = barbellAnimations[currentBarbellFrame];
                 break;
             default:
                 image = idle;

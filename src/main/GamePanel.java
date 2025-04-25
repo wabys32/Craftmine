@@ -1,5 +1,6 @@
 package main;
 
+import entity.Entity;
 import entity.Player;
 import object.SuperObject;
 import tile.TileManager;
@@ -21,15 +22,15 @@ public class GamePanel extends JPanel implements Runnable {
     public final int screenHeight = tileSize * maxScreenRow; // 576px
 
     // WORLD SETTINGS
-    public final int maxWorldCol = 30; // World width
-    public final int maxWorldRow = 30; // World height
+    public final int maxWorldCol = 40; // World width
+    public final int maxWorldRow = 40; // World height
 
     int FPS = 60;
 
     TileManager tileManager = new TileManager(this);
-    KeyHandler keyHandler = new KeyHandler();
+    KeyHandler keyHandler = new KeyHandler(this);
     Sound sound = new Sound();
-    //Sound music = new Sound();
+    Sound music = new Sound();
     public CollisionChecker cChecker = new CollisionChecker(this);
     public Player player = new Player(this, keyHandler);
     Thread gameThread;
@@ -38,6 +39,15 @@ public class GamePanel extends JPanel implements Runnable {
     // Objects
     public SuperObject obj[] = new SuperObject[10]; // prep 10 slots for object (can create up to 10 object at a time)
     public AssetSetter aSetter = new AssetSetter(this); // class for object placement
+
+    // Entities
+    public Entity[] npc = new Entity[10];
+
+    // Game state
+    public int gameState;
+    public final int playState = 1;
+    public final int pauseState = 2;
+
 
 
     // Function to create game panel
@@ -51,7 +61,13 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void setUpGame(){
-        aSetter.setObject();
+        aSetter.setObject(); // spawn all objects
+        aSetter.setNPC(); // spawn all NPCs
+        //play music here
+        //music.setFile(1);
+        //music.loop();
+
+        gameState = playState;
     }
 
     // use threads to run the game
@@ -118,6 +134,13 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
 
+        // draw npcs
+        for(int i = 0; i < npc.length; i++){
+            if(npc[i] != null){
+                npc[i].draw(g2);
+            }
+        }
+
         // then we draw the player
         player.draw(g2);
 
@@ -148,7 +171,19 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void Update(){
-        player.update();
+        if(gameState == playState){
+            // Player
+            player.update();
+            // NPC
+            for(int i = 0; i < npc.length; ++i){
+                if(npc[i] != null){
+                    npc[i].update();
+                }
+            }
+        }
+        if(gameState == pauseState){
+            // noting for now
+        }
     }
 }
 
