@@ -18,5 +18,7 @@ public class OBJ_Dumbbell extends SuperObject{
         }catch(IOException e){
             e.printStackTrace();
         }
+
+        collision = false;
     }
 }

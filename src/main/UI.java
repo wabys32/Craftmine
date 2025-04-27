@@ -5,14 +5,25 @@ import object.OBJ_Protein;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+
 
 public class UI {
     Graphics2D g2;
     GamePanel gamePanel;
     Font arial_50;
+    Font blackNorthFont;
     BufferedImage proteinImage;
     BufferedImage bicepsImage;
     BufferedImage speedImage;
+    BufferedImage logoImage;
+
+    // Menu
+    BufferedImage menuText;
+    BufferedImage startButton;
+    BufferedImage exitButton;
+    BufferedImage menuBackground;
+
 
     public boolean messageOn = false;
     public String message = "";
@@ -25,17 +36,19 @@ public class UI {
         OBJ_Protein protein = new OBJ_Protein(gamePanel);
         proteinImage = protein.image;
 
-        try{
-            bicepsImage = ImageIO.read(getClass().getResourceAsStream("/objects/biceps.png"));
-        }catch(Exception e){
-            e.printStackTrace();
-        }
 
-        try{
-            speedImage = ImageIO.read(getClass().getResourceAsStream("/objects/energy.png"));
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+        bicepsImage = getImage("/objects/biceps.png");
+        speedImage = getImage("/objects/energy.png");
+
+        // Intro
+        logoImage = getImage("/UI/logo.png");
+
+        // Menu
+        menuText = getImage("/UI/menu.png");
+        startButton = getImage("/UI/play.png");
+        exitButton = getImage("/UI/exit.png");
+        menuBackground = getImage("/UI/Lockerroom.png");
+
     }
 
     public void showMessage(String text) {
@@ -45,11 +58,26 @@ public class UI {
 
     public void draw(Graphics2D g2){
         this.g2 = g2;
+
+        if(gamePanel.gameState == gamePanel.introState){
+            drawIntroScreen();
+        }
+
+        if(gamePanel.gameState == gamePanel.menuState){
+            drawMenuScreen();
+        }
+
+        if(gamePanel.gameState == gamePanel.playState){
+            drawGameScreen();
+        }
+    }
+
+    public void drawGameScreen(){
         g2.setFont(arial_50);
         g2.setColor(Color.BLACK);
 
-        g2.drawString(gamePanel.player.proteinsDrank+"", 90, 63); // strength text
-        g2.drawString("0", 90, 128); // speed text
+        g2.drawString(gamePanel.player.strength*10+"", 90, 63); // strength text
+        g2.drawString(gamePanel.player.speedMultiplier*100+"", 90, 128); // speed text
 
         g2.drawImage(bicepsImage, 20, 20, 48, 48, null);
         g2.drawImage(speedImage, 20, 90, 48, 48, null);
@@ -76,6 +104,20 @@ public class UI {
         }
     }
 
+    public void drawIntroScreen(){
+        g2.drawImage(logoImage, 50, 0, 197*4, 120*4, null);
+        g2.setColor(Color.BLACK);
+    }
+
+    public void drawMenuScreen(){
+        g2.drawImage(menuBackground, 0, 0, null);
+        g2.drawImage(menuText, 287, 100, null);
+        g2.drawImage(startButton, 335, 200, null);
+        g2.drawImage(exitButton, 30, 420, null);
+
+
+    }
+
     public void drawPauseScreen() {
         String text = "PAUSED";
         int x = getXforCenteredText(text);
@@ -88,5 +130,45 @@ public class UI {
         int length = (int) g2.getFontMetrics().getStringBounds(text,g2).getWidth();
         int x = gamePanel.screenWidth/2 - length/2;
         return x;
+    }
+
+    public BufferedImage getImage(String path){
+        BufferedImage image = null;
+        try{
+            image = ImageIO.read(getClass().getResourceAsStream(path));
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return image;
+    }
+
+
+    /// Button actions methods ====================
+
+    public void runGame(){
+        gamePanel.gameState = gamePanel.playState;
+        gamePanel.aSetter.setObject(); // spawn all objects
+        gamePanel.aSetter.setNPC(); // spawn all NPCs
+    }
+
+    public void exitButtonDown(){
+        exitButton = getImage("/UI/exitPressed.png");
+    }
+
+    public void exitButtonUp(){
+        exitButton = getImage("/UI/exit.png");
+    }
+
+
+    public void playButtonDown(){
+        startButton = getImage("/UI/playHighlighted.png");
+    }
+
+    public void playButtonUp(){
+        startButton = getImage("/UI/play.png");
+    }
+
+    public void exitButtonPressed(){
+        System.exit(0);
     }
 }

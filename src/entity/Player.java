@@ -3,6 +3,7 @@ package entity;
 import main.GamePanel;
 import main.KeyHandler;
 import main.UtilityTool;
+import object.SuperObject;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -20,11 +21,19 @@ public class Player extends Entity{
     // Player spawn point
     public final int[] spawnPoint = {10,10};
 
+    // Player stats
     public int proteinsDrank = 0;
+    public int strength = 10;
+    public float speedMultiplier = 1;
 
+    // Barbell settings
+    private boolean pumpingBarbell = false;
     private int currentBarbellFrame;
     private int barbellAnimationFrames = 3;
     private BufferedImage[] barbellAnimations = new BufferedImage[barbellAnimationFrames];
+
+    // This will be a reference to the last barbell stand that has been used (to put player in the middle of it, when pumping)
+    private SuperObject lastObject;
 
 
     // Player constructor
@@ -104,6 +113,7 @@ public class Player extends Entity{
         int npcIndex = gamePanel.cChecker.checkEntity(this, gamePanel.npc);
         interactWithNPC(npcIndex);
 
+        // Move Player
         if(!collisionOn){
             if(keyHandler.upPressed){ // player moving up
                 if(worldY/gamePanel.tileSize >= 1) // extra check for world borders
@@ -137,6 +147,15 @@ public class Player extends Entity{
             }
         }
 
+        // Barbell
+        if(keyHandler.ePressed && pumpingBarbell){
+            collisionOn = true;
+            direction = "barbell";
+            worldX = lastObject.worldX;
+            worldY = lastObject.worldY;
+        }
+
+
         // Animate
         // change sprite over time (every 10 iterations (which is 1/6 second (10/60)))
         spriteCounter++;
@@ -157,6 +176,8 @@ public class Player extends Entity{
             String objectName = gamePanel.obj[i].name;
             switch(objectName){
                 case "Dumbbell":
+                    pumpingBarbell = true;
+                    lastObject = gamePanel.obj[i];
                     break;
                 case "Kettlebell":
                     break;
@@ -167,7 +188,13 @@ public class Player extends Entity{
                     gamePanel.ui.showMessage("+Power");
                     System.out.println("Drank protein, current power: " + proteinsDrank);
                     break;
+                case "Barbell Stand":
+                    pumpingBarbell = true;
+                    lastObject = gamePanel.obj[i];
+                    break;
             }
+        }else{
+            pumpingBarbell = false;
         }
     }
 

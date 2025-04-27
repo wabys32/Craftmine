@@ -18,5 +18,7 @@ public class OBJ_Protein extends SuperObject{
         }catch(IOException e){
             e.printStackTrace();
         }
+
+        collision = false;
     }
 }

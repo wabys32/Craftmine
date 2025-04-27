@@ -6,6 +6,11 @@ import object.SuperObject;
 import tile.TileManager;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.image.BufferedImage;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JPanel;
 
@@ -44,10 +49,12 @@ public class GamePanel extends JPanel implements Runnable {
     public Entity[] npc = new Entity[10];
 
     // Game state
+    public final boolean setUpGame = false;
     public int gameState;
+    public final int menuState = 0;
     public final int playState = 1;
     public final int pauseState = 2;
-
+    public final int introState = 3;
 
 
     // Function to create game panel
@@ -58,16 +65,67 @@ public class GamePanel extends JPanel implements Runnable {
         // Key input handler
         this.addKeyListener(keyHandler);
         this.setFocusable(true); // so that GamePanel can be focused to receive key input
+
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                // Handle mouse down event
+                if (gameState == menuState) {
+                    int x = e.getX();
+                    int y = e.getY();
+                    // Check for button intersections on mouse down
+                    checkIntersection(x, y, 335, 200, ui.startButton, ui::runGame); // Play button
+                    checkIntersection(x, y, 30, 420, ui.exitButton, ui::exitButtonPressed); // Exit button
+                }
+            }
+        });
+
+        addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                if (gameState == menuState) {
+                    int x = e.getX();
+                    int y = e.getY();
+                    exitButtonHovered = checkHover(x, y, 30, 420, ui.exitButton, exitButtonHovered, ui::exitButtonDown, ui::exitButtonUp);
+                    playButtonHovered = checkHover(x, y, 335, 200, ui.startButton, playButtonHovered, ui::playButtonDown, ui::playButtonUp);
+                }
+            }
+        });
+    }
+
+    // Function that checks intersection with buttons
+    public void checkIntersection(int mouseX, int mouseY, int positionX, int positionY, BufferedImage button, Runnable action){
+        if(mouseX >= positionX && mouseY >= positionY && mouseX <= positionX + button.getWidth() && mouseY <= positionY + button.getHeight()) {
+            action.run();
+        }
+    }
+
+    private boolean exitButtonHovered = false;
+    private boolean playButtonHovered = false;
+
+    public boolean checkHover(int mouseX, int mouseY, int positionX, int positionY, BufferedImage button, boolean buttonHoverState, Runnable actionHover, Runnable actionOutOfHover){
+        if(mouseX >= positionX && mouseY >= positionY && mouseX <= positionX + button.getWidth() && mouseY <= positionY + button.getHeight()) {
+            if(!buttonHoverState) {
+                System.out.println("Hover");
+                actionHover.run();
+                buttonHoverState = true;
+            }
+        }else{
+            if(buttonHoverState) {
+                System.out.println("Not hover");
+                actionOutOfHover.run();
+                buttonHoverState = false;
+            }
+        }
+        return buttonHoverState;
     }
 
     public void setUpGame(){
-        aSetter.setObject(); // spawn all objects
-        aSetter.setNPC(); // spawn all NPCs
+        gameState = introState;
         //play music here
         //music.setFile(1);
         //music.loop();
-
-        gameState = playState;
     }
 
     // use threads to run the game
@@ -101,7 +159,11 @@ public class GamePanel extends JPanel implements Runnable {
             lastTime = currentTime;
 
             if(delta >= 1){ // DO NOT WRITE ANYTHING ELSE HERE, update functions is below, so write there, not here
-                Update();
+                try {
+                    Update();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 repaint();
                 delta--;
                 //frames++; to display fps
@@ -122,30 +184,33 @@ public class GamePanel extends JPanel implements Runnable {
         // Debug
         //long drawStart = 0;
         //drawStart = System.nanoTime();
+        // Title screen
+        if(gameState == introState || gameState == menuState){
+            ui.draw(g2);
+        }else{
+            // we first draw the map
+            tileManager.draw(g2);
 
-
-        // we first draw the map
-        tileManager.draw(g2);
-
-        // then we draw objects
-        for(int i = 0; i < obj.length; i++){
-            if(obj[i] != null){
-                obj[i].draw(g2, this);
+            // then we draw objects
+            for(int i = 0; i < obj.length; i++){
+                if(obj[i] != null){
+                    obj[i].draw(g2, this);
+                }
             }
-        }
 
-        // draw npcs
-        for(int i = 0; i < npc.length; i++){
-            if(npc[i] != null){
-                npc[i].draw(g2);
+            // draw npcs
+            for(int i = 0; i < npc.length; i++){
+                if(npc[i] != null){
+                    npc[i].draw(g2);
+                }
             }
+
+            // then we draw the player
+            player.draw(g2);
+
+            // UI's gotta be drawn above all layers
+            ui.draw(g2);
         }
-
-        // then we draw the player
-        player.draw(g2);
-
-        // UI's gotta be drawn above all layers
-        ui.draw(g2);
 
         //Debug
         //long drawEnd = System.nanoTime();
@@ -170,7 +235,7 @@ public class GamePanel extends JPanel implements Runnable {
         sound.play();
     }
 
-    public void Update(){
+    public void Update() throws InterruptedException {
         if(gameState == playState){
             // Player
             player.update();
@@ -183,6 +248,11 @@ public class GamePanel extends JPanel implements Runnable {
         }
         if(gameState == pauseState){
             // noting for now
+        }
+        if(gameState == introState){
+            TimeUnit.SECONDS.sleep((long) 1f);
+            gameState = menuState;
+
         }
     }
 }

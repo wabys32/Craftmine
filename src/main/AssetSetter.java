@@ -1,10 +1,7 @@
 package main;
 
 import entity.NPC_Van;
-import object.OBJ_Dumbbell;
-import object.OBJ_Kettlebell;
-import object.OBJ_Protein;
-import object.SuperObject;
+import object.*;
 
 // THIS CLASS IS FOR OBJECT PLACEMENT
 public class AssetSetter {
@@ -22,6 +19,7 @@ public class AssetSetter {
         placeObject(14, 11, new OBJ_Protein(gamePanel));
         placeObject(18, 11, new OBJ_Protein(gamePanel));
         placeObject(18, 15, new OBJ_Protein(gamePanel));
+        placeObject(18, 6, new OBJ_BarbellStand(gamePanel));
     }
 
 
