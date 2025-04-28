@@ -7,11 +7,13 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Random;
 
 public class Entity {
     GamePanel gamePanel;
     public int worldX, worldY;
-    public float speed;
+    public int speed;
+    public int health = 100;
 
     // Let's leave this shit as it is
     public int rightAnimationFrames = 2;
@@ -22,8 +24,10 @@ public class Entity {
     public BufferedImage[] upAnimations = new BufferedImage[upAnimationFrames];
     public int downAnimationFrames = 2;
     public BufferedImage[] downAnimations = new BufferedImage[downAnimationFrames];
+    public BufferedImage[] hitAnimations = new BufferedImage[4];
     public BufferedImage idle;
     public BufferedImage idleUp;
+    public BufferedImage ded;
 
     // Current direction of an entity
     public String direction = "idle";
@@ -42,22 +46,72 @@ public class Entity {
 
     public int actionLockCounter = 0;
 
+    // Combat
+    public int damage = 10;
+    public float distanceToPlayer;
+    public float distanceToAttack = 40f;
+
+    private float currentAttackTime = 0f; // first timer
+    private float attack_timer = 0f; // second timer
+    private float timeToAttack = 2f; // time to attack (in seconds)
+    Random rand = new Random();
+
+    public boolean hit = false;
+    public float hit_timer = 0;
+    public float hit_time = 12f;
+
 
     public Entity(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
+        timeToAttack = rand.nextFloat(0.2f, 1.5f);
+        System.out.println(timeToAttack);
     }
 
-    public void setAction(){} // already declared in childrens' classes
+    public void setAction(){} // already declared in children's classes
 
     public void update(){
         setAction();
 
         collisionOn = false;
         gamePanel.cChecker.checkTile(this);
-        gamePanel.cChecker.checkPlayer(this);
+        if(!collisionOn && distanceToPlayer > distanceToAttack){
 
-        if(!collisionOn){
-            switch(direction){
+            int xDiff = worldX - gamePanel.player.worldX;
+            int yDiff = worldY - gamePanel.player.worldY;
+
+            if (Math.abs(xDiff) >= Math.abs(yDiff)) {
+                // Move horizontally ONLY
+                if (xDiff > 0) {
+                    worldX -= speed;
+                } else if (xDiff < 0) {
+                    worldX += speed;
+                }
+            } else {
+                // Move vertically ONLY
+                if (yDiff > 0) {
+                    worldY -= speed;
+                } else if (yDiff < 0) {
+                    worldY += speed;
+                }
+            }
+
+            if(Math.abs(xDiff)+1 >= Math.abs(yDiff)){
+                if (xDiff > 0) {
+                    direction = "left";
+                } else{
+                    direction = "right";
+                }
+            }else{
+                if (yDiff > 0) {
+                    direction = "up";
+                } else {
+                    direction = "down";
+                }
+            }
+
+
+
+            /*switch(direction){
                 case "up":
                     if(worldY/gamePanel.tileSize >= 1) // extra check for world borders
                         worldY -= speed;
@@ -76,9 +130,13 @@ public class Entity {
                     break;
                 case "idle":
                     break;
-            }
+            }*/
         }
     }
+
+    private int ded_timer = 0;
+    private int ded_time = 60;
+    public int enemy_index = 999;
 
     public void draw(Graphics2D g2){
         BufferedImage image = null;
@@ -133,12 +191,47 @@ public class Entity {
                     break;
             }
 
+            if(hit){
+                if(hit_timer < hit_time){
+                    speed = 2;
+                    switch(direction){
+                        case "left", "idleLeft":
+                            image = hitAnimations[2];
+                            break;
+                        case "right", "idleRight":
+                            image = hitAnimations[3];
+                            break;
+                        case "up", "idleUp":
+                            image = hitAnimations[0];
+                            break;
+                        case "down", "idleDown":
+                            image = hitAnimations[1];
+                            break;
+                    }
+                    hit_timer++;
+                }
+                else{
+                    hit = false;
+                    hit_timer = 0;
+                    speed = 3;
+                }
+            }
+
+            if(health <= 0){
+                ded_timer++;
+                image = ded;
+                speed = 0;
+                if(ded_timer >= ded_time){
+                    gamePanel.npc[enemy_index] = null;
+                }
+            }
 
             g2.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
         }
 
     }
 
+    // function that scales images (optimized)
     public BufferedImage setup(String imagePath){
         UtilityTool uTool = new UtilityTool();
         BufferedImage image = null;
@@ -151,5 +244,30 @@ public class Entity {
         }
 
         return image;
+    }
+
+
+    public void combat(){ // implement in enemies classes only
+        distanceToPlayer = (float) Math.sqrt( Math.pow(Math.abs(worldX-gamePanel.player.worldX),2) + Math.pow(Math.abs(worldY-gamePanel.player.worldY),2) );
+        if(distanceToPlayer <= distanceToAttack){
+            currentAttackTime += 1;
+            attack_timer = currentAttackTime / 60;
+
+            if(attack_timer >= timeToAttack){
+                // So we basically hit the player right here
+                EnemyHit();
+
+                timeToAttack = rand.nextFloat(0.2f, 1.5f);
+                currentAttackTime = 0;
+                attack_timer = 0;
+            }
+        }
+
+    }
+
+    public void EnemyHit(){
+        gamePanel.player.health -= damage;
+        this.hit = true;
+        System.out.println("Hit player");
     }
 }

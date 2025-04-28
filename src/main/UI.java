@@ -5,7 +5,6 @@ import object.OBJ_Protein;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
 
 public class UI {
@@ -13,9 +12,14 @@ public class UI {
     GamePanel gamePanel;
     Font arial_50;
     Font blackNorthFont;
+
+    // Game
     BufferedImage proteinImage;
     BufferedImage bicepsImage;
     BufferedImage speedImage;
+    BufferedImage heartImage;
+
+    // Intro
     BufferedImage logoImage;
 
     // Menu
@@ -36,9 +40,10 @@ public class UI {
         OBJ_Protein protein = new OBJ_Protein(gamePanel);
         proteinImage = protein.image;
 
-
+        // Game
         bicepsImage = getImage("/objects/biceps.png");
         speedImage = getImage("/objects/energy.png");
+        heartImage = getImage("/objects/heart.png");
 
         // Intro
         logoImage = getImage("/UI/logo.png");
@@ -77,10 +82,12 @@ public class UI {
         g2.setColor(Color.BLACK);
 
         g2.drawString(gamePanel.player.strength*10+"", 90, 63); // strength text
-        g2.drawString(gamePanel.player.speedMultiplier*100+"", 90, 128); // speed text
+        g2.drawString((int)(gamePanel.player.speedMultiplier*100)+"", 90, 128); // speed text
+        g2.drawString(gamePanel.player.health+"", 740, 59); // speed text
 
         g2.drawImage(bicepsImage, 20, 20, 48, 48, null);
         g2.drawImage(speedImage, 20, 90, 48, 48, null);
+        g2.drawImage(heartImage, 830, 20, 52, 48, null);
 
         if(messageOn){
             g2.setFont(g2.getFont().deriveFont(30f));

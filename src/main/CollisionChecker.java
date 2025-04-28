@@ -2,6 +2,8 @@ package main;
 
 import entity.Entity;
 
+import java.awt.*;
+
 public class CollisionChecker {
     GamePanel gamePanel;
 
@@ -101,7 +103,7 @@ public class CollisionChecker {
         return index;
     }
 
-    public int checkEntity(Entity entity, Entity[] target){ // check NPC collision for player function
+    public int checkEntity(Entity entity, Entity[] target){ // check NPC collision for player
         int index = 999;
 
         for(int i = 0; i < target.length; i++){
@@ -127,7 +129,7 @@ public class CollisionChecker {
                 }
 
                 if(entity.solidArea.intersects(target[i].solidArea)){
-                    entity.collisionOn = true;
+                    entity.collisionOn = false;
                     index = i;
                 }
 
@@ -140,7 +142,7 @@ public class CollisionChecker {
         return index;
     }
 
-    public void checkPlayer(Entity entity){ // check player collision for NPC function
+    public void checkPlayer(Entity entity){ // check player collision for NPC
         // Get entity's solid area position
         entity.solidArea.x = entity.worldX + entity.solidArea.x;
         entity.solidArea.y = entity.worldY + entity.solidArea.y;

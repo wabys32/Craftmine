@@ -11,30 +11,39 @@ public class NPC_Van extends Entity{
         direction = "idle";
         speed = 1;
         getImage();
+
+        distanceToAttack = 40f;
     }
 
     // load all animations sprites
     public void getImage(){
         for(int i = 0; i < rightAnimationFrames; ++i){
-            rightAnimations[i] = setup("/npc/van_runRight"+(i+1));
+            rightAnimations[i] = setup("/npc/Van/van_runRight"+(i+1));
         }
         for(int i = 0; i < leftAnimationFrames; ++i){
-            leftAnimations[i] = setup("/npc/van_runLeft"+(i+1));
+            leftAnimations[i] = setup("/npc/Van/van_runLeft"+(i+1));
         }
         for(int i = 0; i < downAnimationFrames; ++i){
-            downAnimations[i] = setup("/npc/van_runDown"+(i+1));
+            downAnimations[i] = setup("/npc/Van/van_runDown"+(i+1));
         }
         for(int i = 0; i < upAnimationFrames; ++i){
-            upAnimations[i] = setup("/npc/van_runUp"+(i+1));
+            upAnimations[i] = setup("/npc/Van/van_runUp"+(i+1));
         }
 
-        idle = setup("/npc/van_idle");
-        idleUp = setup("/npc/van_idleUp");
+        hitAnimations[0] = setup("/npc/Van/van_hitTop");
+        hitAnimations[1] = setup("/npc/Van/van_hitBottom");
+        hitAnimations[2] = setup("/npc/Van/van_hitLeft");
+        hitAnimations[3] = setup("/npc/Van/van_hitRight");
+
+        idle = setup("/npc/Van/van_idle");
+        idleUp = setup("/npc/Van/van_idleUp");
+        ded = setup("/npc/Van/van_ded");
     }
 
     public void setAction(){
-        actionLockCounter++;
+        combat();
 
+        /*actionLockCounter++;
         if(actionLockCounter >= 120){
             Random random = new Random();
             int i = random.nextInt(125)+1; // random num from 1 to 100
@@ -76,6 +85,6 @@ public class NPC_Van extends Entity{
             }
 
             actionLockCounter = 0;
-        }
+        }*/
     }
 }

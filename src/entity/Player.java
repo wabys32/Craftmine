@@ -25,6 +25,7 @@ public class Player extends Entity{
     public int proteinsDrank = 0;
     public int strength = 10;
     public float speedMultiplier = 1;
+    public int health = 100;
 
     // Barbell settings
     private boolean pumpingBarbell = false;
@@ -34,6 +35,13 @@ public class Player extends Entity{
 
     // This will be a reference to the last barbell stand that has been used (to put player in the middle of it, when pumping)
     private SuperObject lastObject;
+
+    // Combat
+    public float distanceToAttack = 45f;
+    public boolean hit = false;
+    public float hit_timer = 0;
+    public float hit_time = 12f;
+    public int damage = 25;
 
 
     // Player constructor
@@ -77,6 +85,11 @@ public class Player extends Entity{
             upAnimations[i] = setup("/player/runUp"+(i+1));
         }
 
+        hitAnimations[0] = setup("/player/hitTop");
+        hitAnimations[1] = setup("/player/hitBottom");
+        hitAnimations[2] = setup("/player/hitLeft");
+        hitAnimations[3] = setup("/player/hitRight");
+
         idle = setup("/player/idle");
         idleUp = setup("/player/idleUp");
 
@@ -112,6 +125,7 @@ public class Player extends Entity{
         // Check NPC collision
         int npcIndex = gamePanel.cChecker.checkEntity(this, gamePanel.npc);
         interactWithNPC(npcIndex);
+
 
         // Move Player
         if(!collisionOn){
@@ -246,6 +260,51 @@ public class Player extends Entity{
                 image = idle;
                 break;
         }
+
+        if(hit){
+            if(hit_timer < hit_time){
+                speed = 2;
+                switch(direction){
+                    case "left", "idleLeft":
+                        image = hitAnimations[2];
+                        break;
+                    case "right", "idleRight":
+                        image = hitAnimations[3];
+                        break;
+                    case "up", "idleUp":
+                        image = hitAnimations[0];
+                        break;
+                    case "down", "idleDown":
+                        image = hitAnimations[1];
+                        break;
+                }
+                hit_timer++;
+            }
+            else{
+                hit = false;
+                hit_timer = 0;
+                speed = 3;
+            }
+        }
+
         g2.drawImage(image, screenX, screenY, null); // drawing that nigga
+    }
+
+    public void Hit(){
+        for(int i = 0; i < gamePanel.npc.length; i++) {
+            if(gamePanel.npc[i] != null){
+                float distanceToNPC = (float) Math.sqrt( Math.pow(Math.abs(gamePanel.npc[i].worldX-worldX),2) + Math.pow(Math.abs(gamePanel.npc[i].worldY-worldY),2));
+                if(distanceToNPC <= distanceToAttack){
+                    gamePanel.npc[i].health -= damage;
+                    System.out.println("Hit enemy, health: " + gamePanel.npc[i].health);
+                    if(gamePanel.npc[i].health <= 0){
+                        System.out.println("Enemy ded");
+                        gamePanel.npc[i].enemy_index = i;
+                        //gamePanel.npc[i] = null;
+                    }
+                }
+            }
+        }
+        hit = true;
     }
 }

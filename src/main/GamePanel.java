@@ -66,7 +66,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.addKeyListener(keyHandler);
         this.setFocusable(true); // so that GamePanel can be focused to receive key input
 
-
+        // Mouse pressed event listener
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -78,9 +78,15 @@ public class GamePanel extends JPanel implements Runnable {
                     checkIntersection(x, y, 335, 200, ui.startButton, ui::runGame); // Play button
                     checkIntersection(x, y, 30, 420, ui.exitButton, ui::exitButtonPressed); // Exit button
                 }
+                if(gameState == playState) {
+                    if(player.direction != "barbell"){
+                        player.Hit();
+                    }
+                }
             }
         });
 
+        // Mouse move event listener (to check ui elements hover)
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -94,7 +100,7 @@ public class GamePanel extends JPanel implements Runnable {
         });
     }
 
-    // Function that checks intersection with buttons
+    // Function that checks intersection with buttons with mouse click
     public void checkIntersection(int mouseX, int mouseY, int positionX, int positionY, BufferedImage button, Runnable action){
         if(mouseX >= positionX && mouseY >= positionY && mouseX <= positionX + button.getWidth() && mouseY <= positionY + button.getHeight()) {
             action.run();
@@ -104,16 +110,17 @@ public class GamePanel extends JPanel implements Runnable {
     private boolean exitButtonHovered = false;
     private boolean playButtonHovered = false;
 
+    // Function that checks if some ui element is hovered or not
     public boolean checkHover(int mouseX, int mouseY, int positionX, int positionY, BufferedImage button, boolean buttonHoverState, Runnable actionHover, Runnable actionOutOfHover){
         if(mouseX >= positionX && mouseY >= positionY && mouseX <= positionX + button.getWidth() && mouseY <= positionY + button.getHeight()) {
             if(!buttonHoverState) {
-                System.out.println("Hover");
+                //System.out.println("Hover");
                 actionHover.run();
                 buttonHoverState = true;
             }
         }else{
             if(buttonHoverState) {
-                System.out.println("Not hover");
+                //System.out.println("Not hover");
                 actionOutOfHover.run();
                 buttonHoverState = false;
             }
@@ -122,7 +129,11 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void setUpGame(){
-        gameState = introState;
+        gameState = playState;
+
+        aSetter.setObject(); // spawn all objects
+        aSetter.setNPC(); // spawn all NPCs
+
         //play music here
         //music.setFile(1);
         //music.loop();

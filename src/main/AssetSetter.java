@@ -37,8 +37,8 @@ public class AssetSetter {
     public void setNPC(){
         gamePanel.npc[0] = new NPC_Van(gamePanel);
         // start location
-        gamePanel.npc[0].worldX = gamePanel.tileSize * 10;
-        gamePanel.npc[0].worldY = gamePanel.tileSize * 15;
+        gamePanel.npc[0].worldX = gamePanel.tileSize * 20;
+        gamePanel.npc[0].worldY = gamePanel.tileSize * 20;
     }
 
 }
