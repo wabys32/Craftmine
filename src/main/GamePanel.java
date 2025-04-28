@@ -1,6 +1,7 @@
 package main;
 
 import entity.Entity;
+import entity.NPC_Van;
 import entity.Player;
 import object.SuperObject;
 import tile.TileManager;
@@ -10,6 +11,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JPanel;
@@ -46,7 +48,15 @@ public class GamePanel extends JPanel implements Runnable {
     public AssetSetter aSetter = new AssetSetter(this); // class for object placement
 
     // Entities
-    public Entity[] npc = new Entity[10];
+    public Entity[] npc = new Entity[3];
+    // Entities spawn
+    Random random = new Random();
+    public boolean spawningEnemies = true;
+    private boolean setSpawnTime = false;
+    public int minTimeToSpawn = 60*2; // 2 seconds
+    public int maxTimeToSpawn = 60*5; // 5 seconds
+    private int currentSpawnTimer = 0;
+    private int enemySpawnTime = 0;
 
     // Game state
     public final boolean setUpGame = false;
@@ -129,10 +139,10 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void setUpGame(){
-        gameState = playState;
+        gameState = introState;
 
         aSetter.setObject(); // spawn all objects
-        aSetter.setNPC(); // spawn all NPCs
+        aSetter.spawnNPCS(); // spawn all NPCs
 
         //play music here
         //music.setFile(1);
@@ -256,14 +266,27 @@ public class GamePanel extends JPanel implements Runnable {
                     npc[i].update();
                 }
             }
+            // Spawn enemies:
+            if(spawningEnemies){
+                if(!setSpawnTime){
+                    enemySpawnTime = random.nextInt(minTimeToSpawn, maxTimeToSpawn);
+                    setSpawnTime = true;
+                }
+
+                if(currentSpawnTimer < enemySpawnTime){
+                    currentSpawnTimer ++;
+                }else{
+                    setSpawnTime = false;
+                    aSetter.spawnNPC(random.nextInt(0, maxWorldCol), random.nextInt(0, maxWorldRow), new NPC_Van(this));
+                    System.out.println("spawned enemy, next spawn time: "+enemySpawnTime);
+                    currentSpawnTimer = 0;
+                }
+            }
         }
-        if(gameState == pauseState){
-            // noting for now
-        }
+
         if(gameState == introState){
             TimeUnit.SECONDS.sleep((long) 1f);
             gameState = menuState;
-
         }
     }
 }

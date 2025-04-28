@@ -2,8 +2,6 @@ package entity;
 
 import main.GamePanel;
 
-import java.util.Random;
-
 public class NPC_Van extends Entity{
     public NPC_Van(GamePanel gamePanel) {
         super(gamePanel);

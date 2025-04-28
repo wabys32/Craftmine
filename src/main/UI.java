@@ -155,7 +155,7 @@ public class UI {
     public void runGame(){
         gamePanel.gameState = gamePanel.playState;
         gamePanel.aSetter.setObject(); // spawn all objects
-        gamePanel.aSetter.setNPC(); // spawn all NPCs
+        gamePanel.aSetter.spawnNPCS(); // spawn all NPCs
     }
 
     public void exitButtonDown(){

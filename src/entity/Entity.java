@@ -64,7 +64,7 @@ public class Entity {
     public Entity(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
         timeToAttack = rand.nextFloat(0.2f, 1.5f);
-        System.out.println(timeToAttack);
+        //System.out.println(timeToAttack);
     }
 
     public void setAction(){} // already declared in children's classes
@@ -193,7 +193,6 @@ public class Entity {
 
             if(hit){
                 if(hit_timer < hit_time){
-                    speed = 2;
                     switch(direction){
                         case "left", "idleLeft":
                             image = hitAnimations[2];
@@ -213,7 +212,6 @@ public class Entity {
                 else{
                     hit = false;
                     hit_timer = 0;
-                    speed = 3;
                 }
             }
 
@@ -268,6 +266,6 @@ public class Entity {
     public void EnemyHit(){
         gamePanel.player.health -= damage;
         this.hit = true;
-        System.out.println("Hit player");
+        //System.out.println("Hit player");
     }
 }

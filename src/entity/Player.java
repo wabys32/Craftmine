@@ -200,7 +200,7 @@ public class Player extends Entity{
                     proteinsDrank++;
                     gamePanel.obj[i] = null; // delete object, after picking it up
                     gamePanel.ui.showMessage("+Power");
-                    System.out.println("Drank protein, current power: " + proteinsDrank);
+                    //System.out.println("Drank protein, current power: " + proteinsDrank);
                     break;
                 case "Barbell Stand":
                     pumpingBarbell = true;
@@ -296,9 +296,9 @@ public class Player extends Entity{
                 float distanceToNPC = (float) Math.sqrt( Math.pow(Math.abs(gamePanel.npc[i].worldX-worldX),2) + Math.pow(Math.abs(gamePanel.npc[i].worldY-worldY),2));
                 if(distanceToNPC <= distanceToAttack){
                     gamePanel.npc[i].health -= damage;
-                    System.out.println("Hit enemy, health: " + gamePanel.npc[i].health);
+                    //System.out.println("Hit enemy, health: " + gamePanel.npc[i].health);
                     if(gamePanel.npc[i].health <= 0){
-                        System.out.println("Enemy ded");
+                        //System.out.println("Enemy ded");
                         gamePanel.npc[i].enemy_index = i;
                         //gamePanel.npc[i] = null;
                     }

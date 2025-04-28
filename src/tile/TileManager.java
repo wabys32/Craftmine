@@ -57,7 +57,7 @@ public class TileManager {
     }
 
     public void getTileImage() { // blocks
-        setup(0, "water", false);
+        setup(0, "wooden_floor", false);
         setup(1, "dirt", false);
         setup(2, "grass", false);
         setup(3, "prototype", true);
