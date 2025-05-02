@@ -141,8 +141,8 @@ public class GamePanel extends JPanel implements Runnable {
     public void setUpGame(){
         gameState = introState;
 
-        aSetter.setObject(); // spawn all objects
-        aSetter.spawnNPCS(); // spawn all NPCs
+        //aSetter.setObject(); // spawn all objects
+        //aSetter.spawnNPCS(); // spawn all NPCs
 
         //play music here
         //music.setFile(1);
